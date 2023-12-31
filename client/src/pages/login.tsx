@@ -1,13 +1,20 @@
 import { auth } from "@/libs/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
-import React from "react";
 import { FcGoogle } from "react-icons/fc";
 
 function Login() {
   const handleLogin = async () => {
-    const provider = new GoogleAuthProvider();
-    const { user } = await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      const { user } = await signInWithPopup(auth, provider);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log("Login Error: ", error.message);
+      } else {
+        console.log("Unknown Login Error: ", error);
+      }
+    }
   };
 
   return (
