@@ -1,18 +1,24 @@
 import { auth } from "@/libs/firebase";
+import { axiosInstance } from "@/utils";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { FcGoogle } from "react-icons/fc";
+import { User } from "../../typings";
+import { AxiosError } from "axios";
+import { useRouter } from "next/router";
 
 function Login() {
+  const router = useRouter();
+
   const handleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const { user } = await signInWithPopup(auth, provider);
+      const { data } = await axiosInstance.post<User>("/api/v1/auth/login", { email: user.email });
+      console.log(data);
     } catch (error) {
-      if (error instanceof Error) {
-        console.log("Login Error: ", error.message);
-      } else {
-        console.log("Unknown Login Error: ", error);
+      if (error instanceof AxiosError) {
+        console.log("Login Error: ", error.response?.data);
       }
     }
   };
