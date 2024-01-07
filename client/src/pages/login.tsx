@@ -1,26 +1,18 @@
-import { auth } from "@/libs/firebase";
-import { axiosInstance } from "@/utils";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { googleSignIn } from "@/redux/reducers/thunks";
+import { AppDispatch, RootStore } from "@/redux/store";
 import Image from "next/image";
-import { FcGoogle } from "react-icons/fc";
-import { User } from "../../typings";
-import { AxiosError } from "axios";
 import { useRouter } from "next/router";
+import { FcGoogle } from "react-icons/fc";
+import { useDispatch, useSelector } from "react-redux";
 
 function Login() {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { user, userLoading, userMessage, userError } = useSelector((store: RootStore) => store.userReducer);
 
   const handleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
-      const { data } = await axiosInstance.post<User>("/api/v1/auth/login", { email: user.email });
-      console.log(data);
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        console.log("Login Error: ", error.response?.data);
-      }
-    }
+    dispatch(googleSignIn(router));
   };
 
   return (
